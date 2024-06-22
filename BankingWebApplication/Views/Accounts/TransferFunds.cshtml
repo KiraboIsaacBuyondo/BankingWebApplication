@@ -1,0 +1,83 @@
+﻿@model BankingWebApplication.Models.TransferFunds
+
+@{
+    ViewBag.Title = "TransferFunds";
+}
+
+<h2>TransferFunds</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.SenderAccountNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SenderAccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SenderAccountNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.ReceiverAccountNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ReceiverAccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ReceiverAccountNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <br />
+                <button type="button" class="btn btn-primary btn-md" id="submitTransfer">Transfer</button>
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#submitTransfer').click(function () {
+                var transferData = {
+                    SenderAccountNumber: $('#SenderAccountNumber').val(),
+                    ReceiverAccountNumber: $('#ReceiverAccountNumber').val(),
+                    Amount: $('#Amount').val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/AccountsApi/TransferFunds",
+                    data: JSON.stringify(transferData),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        alert("Transfer successful!");
+                        window.location.href = '@Url.Action("Index", "Accounts")';
+                    },
+                    error: function (response) {
+                        alert("Error: " + response.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
